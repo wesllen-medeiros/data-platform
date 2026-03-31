@@ -1,0 +1,10 @@
+services:
+  airflow-scheduler:
+    image: apache/airflow:2.8.1
+    command: scheduler
+    depends_on:
+      - airflow-webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    volumes:
+      - ../../dags:/opt/airflow/dags

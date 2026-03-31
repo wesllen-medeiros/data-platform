@@ -1,0 +1,5 @@
+services:
+  superset:
+    image: apache/superset
+    ports:
+      - "8088:8088"

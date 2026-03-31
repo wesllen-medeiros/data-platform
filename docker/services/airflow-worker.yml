@@ -1,0 +1,11 @@
+services:
+  airflow-worker:
+    image: apache/airflow:2.8.1
+    command: celery worker
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    volumes:
+      - ../../dags:/opt/airflow/dags

@@ -1,0 +1,50 @@
+services:
+
+  airflow-webserver:
+    extends:
+      file: ./services/airflow-webserver.yml
+      service: airflow-webserver
+
+  airflow-scheduler:
+    extends:
+      file: ./services/airflow-scheduler.yml
+      service: airflow-scheduler
+
+  airflow-worker:
+    extends:
+      file: ./services/airflow-worker.yml
+      service: airflow-worker
+
+  postgres:
+    extends:
+      file: ./services/postgres.yml
+      service: postgres
+
+  redis:
+    extends:
+      file: ./services/redis.yml
+      service: redis
+
+  minio:
+    extends:
+      file: ./services/minio.yml
+      service: minio
+
+  clickhouse:
+    extends:
+      file: ./services/clickhouse.yml
+      service: clickhouse
+
+  superset:
+    extends:
+      file: ./services/superset.yml
+      service: superset
+
+networks:
+  default:
+    name: data-platform-network
+
+volumes:
+  postgres_data:
+  minio_data:
+  clickhouse_data:
