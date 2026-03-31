@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "enabled": true
+    },
+    "shell": {
+      "enabled": true
+    }
+  }
+}
