@@ -5,6 +5,7 @@ Orquestra o pipeline de ingestão PostgreSQL → RAW → Bronze (Lakehouse Archi
 Para adicionar uma nova tabela, basta incluir uma entrada em PIPELINE_CONFIGS.
 Nenhuma lógica de ingestão vive aqui — toda transformação está em ingestion/postgres_pipeline.py.
 """
+from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta
@@ -30,6 +31,7 @@ PIPELINE_CONFIGS = [
         "schema_path": Variable.get(
             "schemas_base_path", default_var="/opt/airflow/schemas"
         ) + "/postgres_orders.yml",
+        "incremental_column": "updated_at",  # None = full load
     },
 ]
 
@@ -58,14 +60,16 @@ def _run_pipeline_task(
     schema_path: str,
     minio_bucket: str,
     minio_conn_id: str,
+    incremental_column: str | None = None,
     **context,
 ) -> dict:
 
     execution_date = context.get("data_interval_start") or datetime.utcnow()
 
     log.info(
-        "DAG task start | source=%s | execution_date=%s",
+        "DAG task start | source=%s | mode=%s | execution_date=%s",
         source_name,
+        "incremental" if incremental_column else "full",
         execution_date.isoformat(),
     )
 
@@ -77,11 +81,13 @@ def _run_pipeline_task(
         minio_bucket=minio_bucket,
         minio_conn_id=minio_conn_id,
         execution_date=execution_date,
+        incremental_column=incremental_column,
     )
 
     log.info(
-        "DAG task end | source=%s | valid=%d | invalid=%d | batch_id=%s",
+        "DAG task end | source=%s | mode=%s | valid=%d | invalid=%d | batch_id=%s",
         source_name,
+        result["mode"],
         result["valid"],
         result["invalid"],
         result["batch_id"],
@@ -97,7 +103,7 @@ def _run_pipeline_task(
 with DAG(
     dag_id="ingest_postgres",
     description="Ingestão PostgreSQL → RAW → Bronze (Lakehouse)",
-    schedule="@daily",
+    schedule="*/30 * * * *",
     start_date=datetime(2025, 1, 1),
     catchup=False,
     max_active_runs=1,
@@ -121,6 +127,7 @@ with DAG(
                 "schema_path": config["schema_path"],
                 "minio_bucket": minio_bucket,
                 "minio_conn_id": minio_conn_id,
+                "incremental_column": config.get("incremental_column"),
             },
         )
 

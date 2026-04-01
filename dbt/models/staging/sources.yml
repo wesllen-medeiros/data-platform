@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: >
+      Camada Bronze — dados ingeridos do PostgreSQL via pipeline Airflow.
+      Tabelas externas no ClickHouse apontando para Parquet no MinIO.
+    schema: bronze
+    tables:
+      - name: orders
+        description: Pedidos extraídos de public.orders via postgres_pipeline.
+        columns:
+          - name: order_id
+            description: Identificador único do pedido.
+          - name: customer_id
+            description: Identificador do cliente.
+          - name: status
+            description: "Status do pedido (ex: pending, confirmed, shipped, cancelled)."
+          - name: total_amount
+            description: Valor total do pedido.
+          - name: created_at
+            description: Data/hora de criação do pedido na fonte.
+          - name: updated_at
+            description: Data/hora da última atualização na fonte.
+          - name: ingestion_timestamp
+            description: Momento em que o registro foi ingerido pelo pipeline.
+          - name: batch_id
+            description: UUID do lote de ingestão.
+          - name: raw_path
+            description: Caminho do arquivo RAW no MinIO (lineage).
+          - name: source
+            description: Nome da fonte de origem.

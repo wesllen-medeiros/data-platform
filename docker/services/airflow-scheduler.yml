@@ -6,5 +6,13 @@ services:
       - airflow-webserver
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      PYTHONPATH: /opt/airflow
+      _PIP_ADDITIONAL_REQUIREMENTS: "minio>=7.2.0 psycopg2-binary>=2.9.9 pandas>=2.0.0 pyarrow>=14.0.0 pyyaml>=6.0.1 dbt-core>=1.7.0,<1.8.0 dbt-clickhouse>=1.7.0,<1.8.0"
+      DBT_PROFILES_DIR: /opt/airflow/dbt
     volumes:
       - ../../dags:/opt/airflow/dags
+      - ../../ingestion:/opt/airflow/ingestion
+      - ../../schemas:/opt/airflow/schemas
+      - ../../dbt:/opt/airflow/dbt

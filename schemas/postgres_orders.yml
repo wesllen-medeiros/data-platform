@@ -25,4 +25,8 @@ fields:
     type: string
     required: false
 
+  - name: updated_at
+    type: string
+    required: false
+
 on_unknown_fields: ignore

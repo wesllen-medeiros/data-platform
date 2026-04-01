@@ -1,0 +1,62 @@
+version: 2
+
+models:
+  - name: orders
+    description: >
+      Modelo Silver final de pedidos, pronto para análise e consumo.
+      Derivado de stg_orders com colunas orientadas ao negócio.
+    columns:
+      - name: order_id
+        description: Identificador único do pedido.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Identificador do cliente.
+        tests:
+          - not_null
+
+      - name: status
+        description: Status do pedido.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+
+      - name: total_amount
+        description: Valor total do pedido.
+
+      - name: is_cancelled
+        description: Verdadeiro se o pedido foi cancelado.
+        tests:
+          - not_null
+
+      - name: is_fulfilled
+        description: Verdadeiro se o pedido foi enviado ou entregue.
+        tests:
+          - not_null
+
+      - name: order_date
+        description: Data do pedido (sem hora).
+        tests:
+          - not_null
+
+      - name: order_year
+        description: Ano do pedido.
+
+      - name: order_month
+        description: Mês do pedido.
+
+      - name: created_at
+        description: Data/hora de criação do pedido na fonte.
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: Data/hora da última atualização na fonte.
+
+      - name: ingestion_timestamp
+        description: Momento da ingestão — mantido para auditoria.
+        tests:
+          - not_null

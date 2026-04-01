@@ -1,0 +1,13 @@
+data_platform:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      host: clickhouse
+      port: 8123
+      user: default
+      password: ""
+      schema: silver
+      secure: false
+      connect_timeout: 10
+      send_receive_timeout: 300

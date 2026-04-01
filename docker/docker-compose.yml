@@ -45,6 +45,11 @@ services:
       file: ./services/airflow-init.yml
       service: airflow-init
 
+  dbt:
+    extends:
+      file: ./services/dbt.yml
+      service: dbt
+
 networks:
   default:
     name: data-platform-network
