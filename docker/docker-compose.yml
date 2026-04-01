@@ -39,6 +39,16 @@ services:
     extends:
       file: ./services/superset.yml
       service: superset
+  
+  airflow-init:
+    extends:
+      file: ./services/airflow-init.yml
+      service: airflow-init
+
+  dbt:
+    extends:
+      file: ./services/dbt.yml
+      service: dbt
 
 networks:
   default:

@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: >
+      Staging Silver para pedidos. Aplica casts, remove nulos obrigatórios,
+      normaliza status e mantém colunas técnicas de lineage.
+    columns:
+      - name: order_id
+        description: Identificador único do pedido.
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Identificador do cliente.
+        tests:
+          - not_null
+
+      - name: status
+        description: Status normalizado do pedido.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+
+      - name: total_amount
+        description: Valor total do pedido. Pode ser nulo para pedidos sem valor definido.
+
+      - name: created_at
+        description: Data/hora de criação do pedido na fonte.
+        tests:
+          - not_null
+
+      - name: updated_at
+        description: Data/hora da última atualização na fonte.
+
+      - name: ingestion_timestamp
+        description: Momento da ingestão pelo pipeline Airflow.
+        tests:
+          - not_null
+
+      - name: batch_id
+        description: UUID do lote de ingestão para rastreabilidade.
+        tests:
+          - not_null
+
+      - name: raw_path
+        description: Caminho do arquivo RAW no MinIO (lineage completa até a origem).
+
+      - name: source
+        description: Nome da fonte de origem (sempre "orders").

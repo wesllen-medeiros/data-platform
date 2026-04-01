@@ -1,37 +1,55 @@
-# Lakehouse Architecture Skill
+# Lakehouse Architecture (PRD v2.0)
 
-Este projeto segue arquitetura lakehouse com medallion:
+## Camadas obrigatórias
 
-## Camadas
+### RAW
+- Sempre antes de qualquer transformação
+- Arquivo original comprimido (gzip)
+- Estrutura:
+  /raw/source={source}/YYYY/MM/DD/batch_{id}.ext.gz
+- Usado apenas para auditoria e reprocessamento
 
-- Raw:
-  - dados originais gzip no MinIO
-  - nunca modificados
-  - usados para reprocessamento
+### BRONZE
+- Formato: Parquet
+- Versionamento: Apache Iceberg
+- Imutável (nunca sobrescrever)
+- Estrutura:
+  /bronze/source={source}/year=YYYY/month=MM/day=DD/
 
-- Bronze:
-  - Parquet + Apache Iceberg
-  - imutável
-  - contém colunas:
-    ingestion_timestamp, source, batch_id, raw_path
+Colunas obrigatórias:
+- ingestion_timestamp
+- source
+- batch_id
+- raw_path
 
-- Silver:
-  - transformação via dbt
-  - limpeza, deduplicação, tipagem
-  - nomes snake_case
+### QUARENTENA
+- Local: /bronze/quarantine/
+- Dados inválidos NÃO param pipeline
+- Deve incluir coluna validation_error
 
-- Gold:
-  - modelagem analítica
-  - ClickHouse
-  - tabelas fato e dimensão
+---
 
-## Regras obrigatórias
+## Ingestão padrão (OBRIGATÓRIO)
 
-- Raw sempre deve existir antes de qualquer transformação
-- Schema deve ser validado via YAML antes do Bronze
-- Dados inválidos devem ir para quarentena
-- Nenhum pipeline pode parar por erro de dado
-- Sem credenciais no código (usar Airflow Connections)
+Extract  
+→ Preserve Raw  
+→ Normalize  
+→ Validate Schema (YAML)  
+→ Load Bronze  
+→ Quarantine  
+
+---
+
+## Regras críticas
+
+- Nunca pular RAW
+- Nunca escrever direto no Bronze sem validação
+- Schema YAML obrigatório por fonte
+- Nenhuma credencial no código (usar Airflow Connections)
+- Pipeline nunca pode parar por erro de dado
+- Dados inválidos vão para quarentena
+
+---
 
 ## Stack
 
@@ -39,11 +57,13 @@ Este projeto segue arquitetura lakehouse com medallion:
 - MinIO (data lake)
 - Iceberg (versionamento)
 - dbt (transformação)
-- ClickHouse (warehouse)
-- Superset (BI)
+- ClickHouse (gold)
+
+---
 
 ## Padrões
 
 - Código modular
-- Separação por responsabilidade
-- Pronto para escala
+- snake_case
+- logs obrigatórios
+- pronto para escala

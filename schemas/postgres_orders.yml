@@ -1,0 +1,32 @@
+# Schema de validação — fonte: postgres / tabela: orders
+
+source: postgres
+entity: orders
+version: 1
+
+fields:
+  - name: order_id
+    type: integer
+    required: true
+
+  - name: customer_id
+    type: integer
+    required: true
+
+  - name: created_at
+    type: string
+    required: true
+
+  - name: total_amount
+    type: float
+    required: false
+
+  - name: status
+    type: string
+    required: false
+
+  - name: updated_at
+    type: string
+    required: false
+
+on_unknown_fields: ignore

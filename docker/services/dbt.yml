@@ -1,0 +1,14 @@
+services:
+  dbt:
+    build:
+      context: ..
+      dockerfile: dbt.Dockerfile
+    depends_on:
+      - clickhouse
+    environment:
+      DBT_PROFILES_DIR: /dbt
+    volumes:
+      - ../../dbt:/dbt
+    working_dir: /dbt
+    ports:
+      - "8082:8082"
